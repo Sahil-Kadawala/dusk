@@ -8,6 +8,9 @@ const flash = require("connect-flash");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
 const ExpressError = require("./utils/ExpressError");
+const User = require("./models/user.js");
+
+const userRoutes = require("./routes/userRoutes.js");
 
 main()
   .then((res) => {
@@ -26,6 +29,11 @@ async function main() {
   }
 }
 
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(methodOverride("_method"));
+
+
 const sessionOptions = {
   secret: "mysupersecretcode",
   resave: false,
@@ -42,18 +50,59 @@ app.use(flash());
 
 app.use(passport.initialize());
 app.use(passport.session());
-passport.use(new LocalStrategy(User.authenticate()));
+passport.use(
+  new LocalStrategy(
+    {
+      usernameField: 'username',
+      passwordField: 'password', 
+      passReqToCallback: true,    
+    },
+    async (req, username, password, done) => {
+      try {
+
+        const userByEmail = await User.findOne({ email: req.body.email });
+        if (!userByEmail) {
+          return done(null, false, { message: 'Email not registered.' });
+        }
+
+        User.authenticate()(username, password, (err, user) => {
+          if (err) return done(err);
+          if (!user) return done(null, false, { message: 'Invalid username or password.' });
+
+          if (user.email !== req.body.email) {
+            return done(null, false, { message: 'Email does not match.' });
+          }
+          return done(null, user);
+        });
+      } catch (error) {
+        return done(error);
+      }
+    }
+  )
+);
 
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
+
+app.use((req, res, next) => {
+  res.locals.success = req.flash("success");
+  res.locals.error = req.flash("error");
+  res.locals.currUser = req.user;
+  next();
+});
+
+app.use("/", userRoutes);
 
 app.all("*", (req, res, next) => {
   return next(new ExpressError(404, "Page Not Found!"));
 });
 
 app.use((err, req, res, next) => {
+  if (res.headersSent) {
+    return next(err);
+  }
   let { status = 500, message = "something went wrong!" } = err;
-  res.status(status).render("error", { message });
+  res.status(status).send(message);
 });
 
 app.listen(3000, () => console.log("server working"));
