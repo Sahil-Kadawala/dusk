@@ -3,6 +3,7 @@ const app = express();
 const path = require("path");
 const mongoose = require("mongoose");
 const methodOverride = require("method-override");
+const dotenv = require("dotenv");
 const session = require("express-session");
 const flash = require("connect-flash");
 const passport = require("passport");
@@ -11,6 +12,8 @@ const ExpressError = require("./utils/ExpressError");
 const User = require("./models/user.js");
 
 const userRoutes = require("./routes/userRoutes.js");
+
+dotenv.config();
 
 main()
   .then((res) => {
@@ -28,6 +31,7 @@ async function main() {
     throw err;
   }
 }
+
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
