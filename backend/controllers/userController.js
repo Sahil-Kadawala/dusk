@@ -31,16 +31,19 @@ module.exports.login = (req, res) => {
   }
 };
 
-module.exports.logout = (req, res) => {
-  req.logout((error) => {
-    if (error) {
-      return next(error);
-    }
-    // Clear the session cookie
-    res.clearCookie('connect.sid', { path: '/' });
-    res.json({ message: "User logged out" });
-  });
-}
+module.exports.logout = (req, res, next) => {
+  return new Promise((resolve, reject) => {
+    req.logout((error) => {
+      if (error) {
+        return reject(error);
+      }
+      // Clear the session cookie
+      res.clearCookie('connect.sid', { path: '/' });
+      res.json({ message: "User logged out" });
+      resolve();
+    });
+  }).catch(next);
+};
 
 module.exports.allUsers = async (req, res) => {
   try {
@@ -124,26 +127,36 @@ module.exports.getUserById = async (req,res)=>{
   }
 }
 
-module.exports.updateUserById = async(req, res) =>{
-  const user = await User.findById(req.params.id);
+module.exports.updateUserById = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
 
-  if(user) {
-    user.username =  user.username = req.body.username || user.username;
-    user.email = req.body.email || user.email;
-    user.firstName = req.body.firstName || user.firstName;
-    user.lastName = req.body.lastName || user.lastName;
-    user.isAdmin = Boolean(req.body.isAdmin);
+    if (user) {
+      user.username = req.body.username || user.username;
+      user.email = req.body.email || user.email;
+      user.firstName = req.body.firstName || user.firstName;
+      user.lastName = req.body.lastName || user.lastName;
 
-    const  updatedUser = await user.save();
-    
-    res.json({
-      _id: updatedUser._id,
-      username: updatedUser.username,
-      email: updatedUser.email,
-      isAdmin: updatedUser.username,
-    });
+      if (req.body.isAdmin === "true") {
+        user.isAdmin = true;
+      } else if (req.body.isAdmin === "false") {
+        user.isAdmin = false;
+      }
 
-  } else {
-    throw new Error("user not found")
+      const updatedUser = await user.save();
+
+      res.json({
+        _id: updatedUser._id,
+        username: updatedUser.username,
+        email: updatedUser.email,
+        isAdmin: updatedUser.isAdmin,
+      });
+
+    } else {
+      throw new Error("User not found");
+    }
+  } catch (error) {
+    console.error("Error updating user:", error);
+    res.status(500).json({ error: "Failed to update user" });
   }
-}
+};
