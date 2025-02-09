@@ -15,7 +15,7 @@ module.exports.signup = async (req, res) => {
       res.send("sigup Successful!")
     });
   } catch (error) {
-    // res.redirect("/signup");
+    // res.redirect("/users/signup");
     res.send(error);
   }
 };

@@ -95,7 +95,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use("/", userRoutes);
+app.use("/users", userRoutes);
 
 app.all("*", (req, res, next) => {
   return next(new ExpressError(404, "Page Not Found!"));
