@@ -1,8 +1,7 @@
 const passport = require("passport");
 const User = require("../models/user");
-const { isAdmin } = require("../middleware");
 
-module.exports.signup = async (req, res) => {
+module.exports.signup = async (req, res, next) => {
   try {
     let { username, email, password, firstName, lastName } = req.body;
     const newUser = new User({ email, firstName, lastName, username });
@@ -12,7 +11,7 @@ module.exports.signup = async (req, res) => {
         return next(error);
       }
       // res.redirect("/products");
-      res.send("sigup Successful!")
+      res.send("sigup Successful!");
     });
   } catch (error) {
     // res.redirect("/users/signup");
@@ -20,15 +19,17 @@ module.exports.signup = async (req, res) => {
   }
 };
 
-module.exports.login = (req, res) => {
-  // res.redirect("/products");
-  if(req.user.isAdmin && req.user){
-    console.log("you are admin");
-    res.send("admin page");
-  } else {
-    // redirect to product page
-    res.send("login successful not admin and product page");
-  }
+module.exports.login = (req, res, next) => {
+  return new Promise((resolve, reject) => {
+    // res.redirect("/products");
+    if (req.user.isAdmin && req.user) {
+      console.log("you are admin");
+      res.send("admin page");
+    } else {
+      // redirect to product page
+      res.send("login successful not admin and product page");
+    }
+  }).catch(next);
 };
 
 module.exports.logout = (req, res, next) => {
@@ -38,7 +39,7 @@ module.exports.logout = (req, res, next) => {
         return reject(error);
       }
       // Clear the session cookie
-      res.clearCookie('connect.sid', { path: '/' });
+      res.clearCookie("connect.sid", { path: "/" });
       res.json({ message: "User logged out" });
       resolve();
     });
@@ -52,7 +53,7 @@ module.exports.allUsers = async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: "Failed to retrieve users" });
   }
-}
+};
 
 module.exports.currentUserProfile = async (req, res) => {
   try {
@@ -118,14 +119,14 @@ module.exports.deleteUser = async (req, res) => {
   }
 };
 
-module.exports.getUserById = async (req,res)=>{
+module.exports.getUserById = async (req, res) => {
   const user = await User.findById(req.params.id).select("-hash -salt");
-  if(user) {
+  if (user) {
     res.json(user);
   } else {
     throw new Error("user not found");
   }
-}
+};
 
 module.exports.updateUserById = async (req, res) => {
   try {
@@ -151,7 +152,6 @@ module.exports.updateUserById = async (req, res) => {
         email: updatedUser.email,
         isAdmin: updatedUser.isAdmin,
       });
-
     } else {
       throw new Error("User not found");
     }

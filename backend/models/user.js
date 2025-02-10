@@ -1,4 +1,3 @@
-const { required } = require("joi");
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
 const passportLocalMongoose = require("passport-local-mongoose");
@@ -19,15 +18,15 @@ const userSchema = new Schema(
     },
     orders: [
       {
-      type: Schema.Types.ObjectId,
-      ref: "Order"
+        type: Schema.Types.ObjectId,
+        ref: "Order",
       },
     ],
     isAdmin: {
       type: Boolean,
       required: true,
       default: false,
-    }    
+    },
   },
   { timestamps: true }
 );

@@ -12,6 +12,7 @@ const ExpressError = require("./utils/ExpressError");
 const User = require("./models/user.js");
 
 const userRoutes = require("./routes/userRoutes.js");
+const categoryRoutes = require("./routes/categoryRoutes.js");
 
 dotenv.config();
 
@@ -32,11 +33,9 @@ async function main() {
   }
 }
 
-
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(methodOverride("_method"));
-
 
 const sessionOptions = {
   secret: "mysupersecretcode",
@@ -57,24 +56,26 @@ app.use(passport.session());
 passport.use(
   new LocalStrategy(
     {
-      usernameField: 'username',
-      passwordField: 'password', 
-      passReqToCallback: true,    
+      usernameField: "username",
+      passwordField: "password",
+      passReqToCallback: true,
     },
     async (req, username, password, done) => {
       try {
-
         const userByEmail = await User.findOne({ email: req.body.email });
         if (!userByEmail) {
-          return done(null, false, { message: 'Email not registered.' });
+          return done(null, false, { message: "Email not registered." });
         }
 
         User.authenticate()(username, password, (err, user) => {
           if (err) return done(err);
-          if (!user) return done(null, false, { message: 'Invalid username or password.' });
+          if (!user)
+            return done(null, false, {
+              message: "Invalid username or password.",
+            });
 
           if (user.email !== req.body.email) {
-            return done(null, false, { message: 'Email does not match.' });
+            return done(null, false, { message: "Email does not match." });
           }
           return done(null, user);
         });
@@ -96,6 +97,7 @@ app.use((req, res, next) => {
 });
 
 app.use("/users", userRoutes);
+app.use("/category", categoryRoutes);
 
 app.all("*", (req, res, next) => {
   return next(new ExpressError(404, "Page Not Found!"));
