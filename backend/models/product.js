@@ -1,34 +1,48 @@
-const mongoose = require("mongoose")
-const {Schema} = mongoose;
+const mongoose = require("mongoose");
+const { Schema } = mongoose;
 
-const productSchema = new Schema ({
+const productSchema = new Schema(
+  {
     name: {
-        type: String,
-        required: true,
+      type: String,
+      required: true,
     },
     description: {
-        type: String,
-        required: true,
+      type: String,
+      required: true,
     },
     price: {
-        type: Number,
-        required: true,
+      type: Number,
+      required: true,
     },
     category: {
-        type: String,
-        enum: ["accessories","clothing","sportswear","mens","womens"],
-        required: true,
+      type: Schema.Types.ObjectId,
+      ref: "Category",
+      required: true,
     },
-    stock: {
-        type: Number,
-        required: true,
+    quantity: {
+      type: Number,
+      required: true,
     },
-    image: {
-        url: String,
-        filename: String,
-        required: true,
-    }
-
-},
-{timestamps: true}
+    reviews: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Review",
+      },
+    ],
+    countInStock: {
+      type: Number,
+      required: true,
+      default: 0,
+    },
+  },
+  { timestamps: true }
 );
+
+productSchema.post("findOneAndDelete", async (product) => {
+  if (product.reviews.length) {
+    await Review.deleteMany({ _id: { $in: product.reviews } });
+  }
+});
+
+module.exports = mongoose.model("Product", productSchema);
