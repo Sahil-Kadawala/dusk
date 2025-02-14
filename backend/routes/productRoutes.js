@@ -19,6 +19,7 @@ router.route("/allProducts").get(productController.getAllProducts);
 
 router.get("/top", wrapAsync(productController.getTopProduct));
 router.get("/new", wrapAsync(productController.getNewProduct));
+router.route("/filtered-products").post(productController.filterProducts);
 
 router
   .route("/:id")

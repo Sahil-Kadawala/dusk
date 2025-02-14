@@ -181,3 +181,19 @@ module.exports.getNewProduct = async (req, res) => {
     res.status(400).json(error.message);
   }
 };
+
+module.exports.filterProducts = asyncHandler(async (req, res) => {
+  try {
+    const { checked, radio } = req.body; // checked is an array of Category id that user wants to filter by
+    // and radio is array of 2 element representing max and min price range
+    let args = {};
+    if (checked.length > 0) args.category = checked;
+    if (radio.length) args.price = { $gte: radio[0], $lte: radio[1] };
+
+    const products = await Product.find(args);
+    res.json(products);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Server Error" });
+  }
+});
