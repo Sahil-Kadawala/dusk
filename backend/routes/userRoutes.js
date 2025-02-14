@@ -26,8 +26,8 @@ router
 // Admin Routes
 router
   .route("/:id")
-  .delete(isLoggedIn, isAdmin, checkId, wrapAsync(userController.deleteUser))
-  .get(isLoggedIn, isAdmin, checkId, wrapAsync(userController.getUserById))
-  .put(isLoggedIn, isAdmin, checkId, wrapAsync(userController.updateUserById));
+  .delete(isLoggedIn, isAdmin, wrapAsync(userController.deleteUser))
+  .get(isLoggedIn, isAdmin, wrapAsync(userController.getUserById))
+  .put(isLoggedIn, isAdmin, wrapAsync(userController.updateUserById));
 
 module.exports = router;

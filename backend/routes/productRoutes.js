@@ -8,6 +8,10 @@ const multer = require("multer");
 const { storage } = require("../config/cloudConfig");
 const upload = multer({ storage, limits: { fileSize: 5 * 1024 * 1024 } });
 
+if (process.env.NODE_ENV != "production") {
+  require("dotenv").config();
+}
+
 router
   .route("/")
   .get(wrapAsync(productController.getProducts)) // 6 products
@@ -30,7 +34,6 @@ router
   .put(
     isLoggedIn,
     isAdmin,
-    checkId,
     upload.single("product[image]"),
     wrapAsync(productController.updateProduct)
   )

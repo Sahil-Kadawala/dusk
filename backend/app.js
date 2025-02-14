@@ -1,24 +1,24 @@
+if (process.env.NODE_ENV !== "production") {
+  require("dotenv").config();
+}
+
 const express = require("express");
 const app = express();
 const path = require("path");
 const mongoose = require("mongoose");
 const methodOverride = require("method-override");
-const dotenv = require("dotenv");
 const session = require("express-session");
 const flash = require("connect-flash");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
 const ExpressError = require("./utils/ExpressError");
 const User = require("./models/user.js");
-const methodOverride = require("method-override");
 
 const userRoutes = require("./routes/userRoutes.js");
 const categoryRoutes = require("./routes/categoryRoutes.js");
 const productRoutes = require("./routes/productRoutes.js");
 const reviewRoutes = require("./routes/reviewRoutes.js");
 const orderRoutes = require("./routes/orderRoutes.js");
-
-dotenv.config();
 
 main()
   .then((res) => {

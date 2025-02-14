@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const User = require("./models/user");
 const ExpressError = require("./utils/ExpressError");
 const Review = require("./models/review");

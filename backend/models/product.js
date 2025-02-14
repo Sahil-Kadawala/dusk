@@ -45,11 +45,13 @@ const productSchema = new Schema(
 );
 
 productSchema.post("findOneAndDelete", async (product) => {
-  if (product.reviews.length) {
-    await Review.deleteMany({ _id: { $in: product.reviews } });
-  }
-  if (product.image && product.image.filename) {
-    await cloudinary.uploader.destroy(listing.image.filename);
+  if (product) {
+    if (product.reviews && product.reviews.length) {
+      await Review.deleteMany({ _id: { $in: product.reviews } });
+    }
+    if (product.image && product.image.filename) {
+      await cloudinary.uploader.destroy(product.image.filename);
+    }
   }
 });
 

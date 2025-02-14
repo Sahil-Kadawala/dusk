@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const orderController = require("../controllers/orderController");
-const { isLoggedIn, isAdmin, checkId } = require("../middleware");
+const { isLoggedIn, isAdmin } = require("../middleware");
 const wrapAsync = require("../utils/wrapAsync");
 
 router

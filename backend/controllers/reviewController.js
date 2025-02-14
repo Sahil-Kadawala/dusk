@@ -1,7 +1,5 @@
 const Review = require("../models/review");
-const User = require("../models/user");
 const Product = require("../models/product");
-const product = require("../models/product");
 
 module.exports.addReview = async (req, res) => {
   const product = await Product.findById(req.params.id);
