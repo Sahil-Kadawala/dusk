@@ -15,6 +15,7 @@ const userRoutes = require("./routes/userRoutes.js");
 const categoryRoutes = require("./routes/categoryRoutes.js");
 const productRoutes = require("./routes/productRoutes.js");
 const reviewRoutes = require("./routes/reviewRoutes.js");
+const orderRoutes = require("./routes/orderRoutes.js");
 
 dotenv.config();
 
@@ -102,6 +103,7 @@ app.use("/users", userRoutes);
 app.use("/category", categoryRoutes);
 app.use("/products", productRoutes);
 app.use("/products/:id/reviews", reviewRoutes);
+app.use("/orders", orderRoutes);
 
 app.all("*", (req, res, next) => {
   return next(new ExpressError(404, "Page Not Found!"));
