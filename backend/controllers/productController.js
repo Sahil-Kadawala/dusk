@@ -199,7 +199,7 @@ module.exports.getNewProduct = async (req, res) => {
 
 module.exports.filterProducts = async (req, res) => {
   try {
-    const { checked, radio } = req.body; // checked is an array of Category id that user wants to filter by
+    const { checked, radio } = req.body.product; // checked is an array of Category id that user wants to filter by
     // and radio is array of 2 element representing max and min price range
     let args = {};
     if (checked.length > 0) args.category = checked;

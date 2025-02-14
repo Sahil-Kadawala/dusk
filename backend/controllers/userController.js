@@ -3,7 +3,7 @@ const User = require("../models/user");
 
 module.exports.signup = async (req, res, next) => {
   try {
-    let { username, email, password, firstName, lastName } = req.body;
+    let { username, email, password, firstName, lastName } = req.body.user;
     const newUser = new User({ email, firstName, lastName, username });
     const registeredUser = await User.register(newUser, password);
     req.login(registeredUser, (error) => {
@@ -80,13 +80,13 @@ module.exports.updateCurrentUserProfile = async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
 
-    user.username = req.body.username || user.username;
-    user.email = req.body.email || user.email;
-    user.firstName = req.body.firstName || user.firstName;
-    user.lastName = req.body.lastName || user.lastName;
+    user.username = req.body.user.username || user.username;
+    user.email = req.body.user.email || user.email;
+    user.firstName = req.body.user.firstName || user.firstName;
+    user.lastName = req.body.user.lastName || user.lastName;
 
-    if (req.body.password) {
-      await user.setPassword(req.body.password);
+    if (req.body.user.password) {
+      await user.setPassword(req.body.user.password);
     }
 
     await user.save();
@@ -133,14 +133,14 @@ module.exports.updateUserById = async (req, res) => {
     const user = await User.findById(req.params.id);
 
     if (user) {
-      user.username = req.body.username || user.username;
-      user.email = req.body.email || user.email;
-      user.firstName = req.body.firstName || user.firstName;
-      user.lastName = req.body.lastName || user.lastName;
+      user.username = req.body.user.username || user.username;
+      user.email = req.body.user.email || user.email;
+      user.firstName = req.body.user.firstName || user.firstName;
+      user.lastName = req.body.user.lastName || user.lastName;
 
-      if (req.body.isAdmin === "true") {
+      if (req.body.user.isAdmin === "true") {
         user.isAdmin = true;
-      } else if (req.body.isAdmin === "false") {
+      } else if (req.body.user.isAdmin === "false") {
         user.isAdmin = false;
       }
 

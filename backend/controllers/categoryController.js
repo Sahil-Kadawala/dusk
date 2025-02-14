@@ -2,7 +2,7 @@ const Category = require("../models/category");
 
 module.exports.createCategory = async (req, res) => {
   try {
-    const { name } = req.body;
+    const { name } = req.body.category;
 
     if (!name) {
       return res.json({ error: "Name is required" });
@@ -24,7 +24,7 @@ module.exports.createCategory = async (req, res) => {
 
 module.exports.updateCategory = async (req, res) => {
   try {
-    const { name } = req.body;
+    const { name } = req.body.category;
     const { categoryId } = req.params;
 
     const category = await Category.findById(categoryId);

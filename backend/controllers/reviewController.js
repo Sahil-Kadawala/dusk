@@ -5,7 +5,7 @@ const product = require("../models/product");
 
 module.exports.addReview = async (req, res) => {
   const product = await Product.findById(req.params.id);
-  let review = new Review(req.body);
+  let review = new Review(req.body.review);
   review.author = req.user._id;
 
   product.reviews.push(review);
