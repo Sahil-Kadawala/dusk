@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
+const { cloudinary } = require("../config/cloudConfig");
 
 const productSchema = new Schema(
   {
@@ -46,6 +47,9 @@ const productSchema = new Schema(
 productSchema.post("findOneAndDelete", async (product) => {
   if (product.reviews.length) {
     await Review.deleteMany({ _id: { $in: product.reviews } });
+  }
+  if (product.image && product.image.filename) {
+    await cloudinary.uploader.destroy(listing.image.filename);
   }
 });
 
