@@ -4,6 +4,9 @@ const { isLoggedIn, isAdmin, checkId } = require("../middleware");
 const wrapAsync = require("../utils/wrapAsync");
 const productController = require("../controllers/productController");
 const formidable = require("express-formidable");
+const multer = require("multer");
+const { storage } = require("../config/cloudConfig");
+const upload = multer({ storage, limits: { fileSize: 5 * 1024 * 1024 } });
 
 router
   .route("/")
@@ -11,7 +14,7 @@ router
   .post(
     isLoggedIn,
     isAdmin,
-    formidable(),
+    upload.single("product[image]"),
     wrapAsync(productController.addProduct)
   );
 
@@ -28,7 +31,7 @@ router
     isLoggedIn,
     isAdmin,
     checkId,
-    formidable(),
+    upload.single("product[image]"),
     wrapAsync(productController.updateProduct)
   )
   .delete(isLoggedIn, isAdmin, wrapAsync(productController.deleteProduct));

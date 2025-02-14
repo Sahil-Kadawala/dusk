@@ -35,6 +35,10 @@ const productSchema = new Schema(
       required: true,
       default: 0,
     },
+    image: {
+      url: String,
+      filename: String,
+    },
   },
   { timestamps: true }
 );

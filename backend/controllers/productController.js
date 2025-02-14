@@ -1,9 +1,10 @@
 const Product = require("../models/product");
+const { cloudinary } = require("../config/cloudConfig");
 
 module.exports.addProduct = async (req, res) => {
   try {
     const { name, description, price, category, quantity, countInStocks } =
-      req.fields;
+      req.body.product;
 
     switch (true) {
       case !name:
@@ -18,9 +19,15 @@ module.exports.addProduct = async (req, res) => {
         return res.json({ error: "Category is required" });
       case !quantity:
         return res.json({ error: "Quantity is required" });
+      case !req.file:
+        return res.json({ error: "Image is required" });
     }
 
-    const product = new Product({ ...req.fields });
+    const { path: url, filename } = req.file;
+
+    const product = new Product({ ...req.body.product });
+    product.image = { url, filename };
+
     await product.save();
     res.json(product);
   } catch (error) {
@@ -32,7 +39,7 @@ module.exports.addProduct = async (req, res) => {
 module.exports.updateProduct = async (req, res) => {
   try {
     const { name, description, price, category, quantity, countInStocks } =
-      req.fields;
+      req.body.product;
 
     // Validation
     switch (true) {
@@ -52,12 +59,20 @@ module.exports.updateProduct = async (req, res) => {
 
     const product = await Product.findByIdAndUpdate(
       req.params.id,
-      { ...req.fields },
+      { ...req.body.product },
       { new: true }
     );
 
-    await product.save();
+    if (req.file) {
+      const { path: url, filename } = req.file;
 
+      if (product.image && product.image.filename) {
+        await cloudinary.uploader.destroy(product.image.filename);
+      }
+      product.image = { url, filename };
+    }
+
+    await product.save();
     res.json(product);
   } catch (error) {
     console.error(error);
