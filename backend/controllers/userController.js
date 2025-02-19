@@ -10,7 +10,7 @@ module.exports.signup = async (req, res, next) => {
       if (error) {
         return next(error);
       }
-      // res.redirect("/products");
+      // res.redirect("/prod ucts");
       res.send("sigup Successful!");
     });
   } catch (error) {

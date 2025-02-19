@@ -70,27 +70,24 @@ app.use(passport.session());
 passport.use(
   new LocalStrategy(
     {
-      usernameField: "username",
+      usernameField: "email",
       passwordField: "password",
       passReqToCallback: true,
     },
-    async (req, username, password, done) => {
+    async (req, email, password, done) => {
       try {
-        const userByEmail = await User.findOne({ email: req.body.email });
+        const userByEmail = await User.findOne({ email });
         if (!userByEmail) {
           return done(null, false, { message: "Email not registered." });
         }
 
-        User.authenticate()(username, password, (err, user) => {
+        User.authenticate()(email, password, (err, user) => {
           if (err) return done(err);
           if (!user)
             return done(null, false, {
-              message: "Invalid username or password.",
+              message: "Invalid email or password.",
             });
 
-          if (user.email !== req.body.email) {
-            return done(null, false, { message: "Email does not match." });
-          }
           return done(null, user);
         });
       } catch (error) {
