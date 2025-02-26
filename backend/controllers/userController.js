@@ -3,18 +3,16 @@ const User = require("../models/user");
 
 module.exports.signup = async (req, res, next) => {
   try {
-    let { username, email, password, firstName, lastName } = req.body.user;
-    const newUser = new User({ email, firstName, lastName, username });
+    let { email, password, firstName, lastName } = req.body.user;
+    const newUser = new User({ email, firstName, lastName });
     const registeredUser = await User.register(newUser, password);
     req.login(registeredUser, (error) => {
       if (error) {
         return next(error);
       }
-      // res.redirect("/prod ucts");
-      res.send("sigup Successful!");
+      res.send("Signup Successful!");
     });
   } catch (error) {
-    // res.redirect("/users/signup");
     res.send(error);
   }
 };
